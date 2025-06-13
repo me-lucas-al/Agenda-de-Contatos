@@ -7,7 +7,7 @@ class ContactUseCase {
         this.contactRepository = new ContactsRepositoryPrisma;
     }
 
-    async create({email, id, name, phone, userId}: ContactCreate) {
+    async create({email, id, name, phone, userEmail}: ContactCreate) {
 
     }
 }

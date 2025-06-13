@@ -11,7 +11,7 @@ export interface ContactCreate{
     email: string;
     name: string;
     phone: string;
-    userId: string;
+    userEmail: string;
 }
 
 export interface ContactRepository {
