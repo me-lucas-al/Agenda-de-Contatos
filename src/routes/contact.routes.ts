@@ -17,7 +17,28 @@ export async function contactRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.get("/", (req, reply) => {
-    reply.send("hello world");
+  fastify.get("/", async (req, reply) => {
+      const emailUser = req.headers['email'];
+      try{
+        const data = await contactUseCase.listAllContacts(emailUser);
+        return reply.send(data);
+      } catch(error){
+        reply.send(error)
+      }
+  });
+
+  fastify.put("/:id", async (req, reply) => {
+      const { id } = req.params;
+      const { name, email, phone } = req.body;
+      try{
+        const data = await contactUseCase.updateContact({
+          id,
+          name,
+          email,
+          phone,
+        })
+      } catch(error){
+        reply.send(error)
+      }
   });
 }
