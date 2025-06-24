@@ -12,7 +12,7 @@ model User {
   name      String
   email     String     @unique
   createdAt DateTime   @default(now())
-  updateAt  DateTime   @updatedAt
+  updatedAt  DateTime   @updatedAt
   Contacts  Contacts[]
 
   @@map("users")
