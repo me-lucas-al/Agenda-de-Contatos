@@ -35,7 +35,7 @@ class ContactsRepositoryPrisma implements ContactRepository{
 
         return result;
     }
-    async updateContact({id, name, email, phone}: Contact): Promise<Contact[]> {
+    async updateContact({id, name, email, phone}: Contact): Promise<Contact> {
         const result = await prisma.contacts.update({
             where: {
                 id, 
@@ -44,9 +44,19 @@ class ContactsRepositoryPrisma implements ContactRepository{
                 email,
                 name, 
                 phone,
-            }
+            },
         });
         return result;
+    }
+
+    async delete(id: string): Promise<boolean> {
+        const result = await prisma.contacts.delete({
+            where: {
+                id
+            },
+        })
+
+        return result ? true : false;
     }
 
 }
