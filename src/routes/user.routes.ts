@@ -27,16 +27,18 @@ export async function userRoutes(fastify: FastifyInstance) {
   );
 
   fastify.get("/", {
-    schema: {
-      summary: "Ping de rota de usuários",
-      tags: ["Usuários"],
-      response: {
-        200: z.literal("route users running"),
-      },
+  schema: {
+    summary: "Ping de rota de usuários",
+    tags: ["Usuários"],
+    response: {
+      200: z.object({
+        message: z.string(),
+      }),
     },
-    handler: async (_, reply) => {
-      reply.send("route users running");
-    },
-  });
+  },
+  handler: async (_, reply) => {
+    reply.send({ message: "route users running" });
+  },
+});
 }
 

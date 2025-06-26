@@ -7,12 +7,13 @@ export const UserCreateSchema = z.object({
 
 export const UserResponseSchema = UserCreateSchema.extend({
   id: z.string(),
-  createdAt: z.string().refine((val) => !isNaN(Date.parse(val)), {
-  message: "Data inválida",
+  createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T/, {
+  message: "Data no formato ISO inválida",
 }),
-updatedAt: z.string().refine((val) => !isNaN(Date.parse(val)), {
-  message: "Data inválida",
+updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T/, {
+  message: "Data no formato ISO inválida",
 }),
+
 
 });
 
