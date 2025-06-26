@@ -1,23 +1,42 @@
 import { FastifyInstance } from "fastify";
 import { UserUseCase } from "../usecases/user.usecase";
-import { UserCreate } from "../interfaces/user.interface";
+import { UserCreateSchema, UserResponseSchema } from "../schemas/user.schema";
+import { z } from "zod";
+
 
 export async function userRoutes(fastify: FastifyInstance) {
   const userUseCase = new UserUseCase();
-  fastify.post<{ Body: UserCreate }>("/", async (req, reply) => {
-    const { name, email } = req.body;
-    try {
-      const data = await userUseCase.create({
-        name,
-        email,
-      });
-      return reply.send(data);
-    } catch (error) {
-      reply.send(error);
-    }
-  });
 
-  fastify.get("/", (req, reply) => {
-    reply.send("hello world");
+  fastify.post(
+    "/",
+    {
+      schema: {
+        summary: "Cria um novo usuário",
+        tags: ["Usuários"],
+        body: UserCreateSchema,
+        response: {
+          200: UserResponseSchema,
+        },
+      },
+    },
+    async (req, reply): Promise<void> => {
+      const body = req.body as z.infer<typeof UserCreateSchema>;
+      const result = await userUseCase.create(body);
+      reply.send(result);
+    }
+  );
+
+  fastify.get("/", {
+    schema: {
+      summary: "Ping de rota de usuários",
+      tags: ["Usuários"],
+      response: {
+        200: z.literal("route users running"),
+      },
+    },
+    handler: async (_, reply) => {
+      reply.send("route users running");
+    },
   });
 }
+
