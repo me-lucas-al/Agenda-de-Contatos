@@ -9,24 +9,31 @@ const app: FastifyInstance = fastify({
 });
 
 app.register(swagger, {
-  swagger: {
+  openapi: {
     info: {
       title: 'Agenda API',
       description: 'Documentação da API de contatos e usuários',
       version: '1.0.0',
     },
-    host: 'localhost:3100',
-    schemes: ['http'],
-    consumes: ['application/json'],
-    produces: ['application/json'],
+    servers: [
+      { url: 'http://localhost:3100', description: 'Local server' },
+      { url: 'http://0.0.0.0:3100', description: 'Docker server' },
+    ],
+    tags: [
+      { name: 'users', description: 'Operações relacionadas a usuários' },
+      { name: 'contacts', description: 'Operações relacionadas a contatos' },
+    ],
   },
 });
 
 app.register(swaggerUI, {
   routePrefix: '/docs',
   uiConfig: {
-    docExpansion: 'list',
-    deepLinking: false,
+    docExpansion: 'list', 
+    deepLinking: true,    
+  },
+  theme: {
+    title: "Agenda API Docs",
   },
   staticCSP: true,
   transformStaticCSP: (header) => header,
