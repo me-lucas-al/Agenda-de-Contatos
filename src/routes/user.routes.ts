@@ -6,39 +6,107 @@ import { z } from "zod";
 
 export async function userRoutes(fastify: FastifyInstance) {
   const userUseCase = new UserUseCase();
-
-  fastify.post(
-    "/",
-    {
-      schema: {
-        summary: "Cria um novo usuário",
-        tags: ["Usuários"],
-        body: UserCreateSchema,
-        response: {
-          200: UserResponseSchema,
+  
+  fastify.post<{ Body: UserCreate }>("/", {
+    schema: {
+      tags: ["users"],
+      summary: "Cria um novo usuário",
+      description: "Cadastra um novo usuário no sistema (email deve ser único)",
+      body: {
+        type: "object",
+        required: ["name", "email"],
+        properties: {
+          name: { 
+            type: "string",
+            description: "Nome completo do usuário"
+          },
+          email: { 
+            type: "string", 
+            format: "email",
+            description: "Email válido e único"
+          }
         },
+        examples: [
+          {
+            name: "Carlos Silva",
+            email: "carlos@empresa.com"
+          }
+        ]
       },
-    },
-    async (req, reply): Promise<void> => {
-      const body = req.body as z.infer<typeof UserCreateSchema>;
-      const result = await userUseCase.create(body);
-      reply.send(result);
+      response: {
+        201: {
+          description: "Usuário criado com sucesso",
+          type: "object",
+          properties: {
+            id: { 
+              type: "string"
+            },
+            name: { 
+              type: "string"
+            },
+            email: { 
+              type: "string"
+            },
+            createdAt: { 
+              type: "string", 
+              format: "date-time"
+            }
+          },
+          examples: [
+            {
+              id: "550e8400-e29b-41d4-a716-446655440000",
+              name: "Carlos Silva",
+              email: "carlos@empresa.com",
+              createdAt: "2024-05-01T12:00:00Z"
+            }
+          ]
+        },
+        400: {
+          description: "Erro na requisição",
+          type: "object",
+          properties: {
+            error: { 
+              type: "string"
+            }
+          },
+          examples: [
+            {
+              error: "Usuário já existente"
+            }
+          ]
+        }
+      }
     }
-  );
+  }, async (req, reply) => {
+    const { name, email } = req.body;
+    try {
+      const data = await userUseCase.create({
+        name,
+        email,
+      });
+      return reply.status(201).send(data);
+    } catch (error) {
+      console.error('Erro ao criar usuário:', error);
+      
+      return reply.status(400).send({
+        error: error instanceof Error ? error.message : "Erro interno do servidor"
+      });
+    }
+  });
 
   fastify.get("/", {
-  schema: {
-    summary: "Ping de rota de usuários",
-    tags: ["Usuários"],
-    response: {
-      200: z.object({
-        message: z.string(),
-      }),
-    },
-  },
-  handler: async (_, reply) => {
-    reply.send({ message: "route users running" });
-  },
-});
+    schema: {
+      tags: ["users"],
+      summary: "Health check",
+      description: "Rota simples para testar se a API está funcionando",
+      response: {
+        200: {
+          description: 'Mensagem de saúde',
+          type: 'string'
+        }
+      }
+    }
+  }, (req, reply) => {
+    reply.send("hello world");
+  });
 }
-
