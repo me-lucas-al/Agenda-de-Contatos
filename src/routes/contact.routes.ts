@@ -8,106 +8,73 @@ export async function contactRoutes(fastify: FastifyInstance) {
   fastify.addHook("preHandler", authMiddleware);
   
   fastify.post<{ Body: ContactCreate }>(
-    "/",
-    {
-      schema: {
-        tags: ["contacts"],
-        summary: "Cria um novo contato",
-        description: "Associa um contato ao usuário autenticado (via email no header)",
-        headers: {
-          type: "object",
-          required: ["email"],
-          properties: {
-            email: {
-              type: "string",
-              format: "email",
-              examples: [{
-                value: "usuario_logado@empresa.com",
-                description: "Email do usuário logado"
-              }]
-            },
-          },
-        },
-        body: {
-          type: "object",
-          required: ["name", "email", "phone"],
-          properties: {
-            name: {
-              type: "string",
-              examples: [{
-                value: "Maria Souza",
-                description: "Nome do contato"
-              }]
-            },
-            email: {
-              type: "string",
-              format: "email",
-              examples: [{
-                value: "maria@contato.com",
-                description: "Email do contato"
-              }]
-            },
-            phone: {
-              type: "string",
-              examples: [{
-                value: "11987654321",
-                description: "Telefone com DDD"
-              }]
-            },
-          },
-        },
-        response: {
-          201: {
-            description: "Contato criado com sucesso",
-            type: "object",
-            properties: {
-              id: {
-                type: "string",
-                examples: [{
-                  value: "660e8400-e29b-41d4-a716-446655440000"
-                }]
-              },
-              name: { 
-                type: "string", 
-                examples: [{
-                  value: "Maria Souza"
-                }]
-              },
-              email: { 
-                type: "string", 
-                examples: [{
-                  value: "maria@contato.com"
-                }]
-              },
-              phone: { 
-                type: "string", 
-                examples: [{
-                  value: "11987654321"
-                }]
-              },
-              userId: {
-                type: "string",
-                examples: [{
-                  value: "550e8400-e29b-41d4-a716-446655440000"
-                }]
-              },
-            },
-          },
-          400: {
-            description: "Erro na requisição",
-            type: "object",
-            properties: {
-              error: {
-                type: "string",
-                examples: [{
-                  value: "Cabeçalho 'email' ausente ou inválido"
-                }]
-              },
-            },
+  "/",
+  {
+    schema: {
+      tags: ["contacts"],
+      summary: "Cria um novo contato",
+      description: "Associa um contato ao usuário autenticado (via email no header)",
+      headers: {
+        type: "object",
+        required: ["email"],
+        properties: {
+          email: {
+            type: "string",
+            format: "email",
+            examples: ["usuario_logado@empresa.com"] 
           },
         },
       },
-    },
+      body: {
+        type: "object",
+        required: ["name", "email", "phone"],
+        properties: {
+          name: { type: "string" },
+          email: { type: "string", format: "email" },
+          phone: { type: "string" }
+        },
+        examples: [ 
+          {
+            name: "Maria Souza",
+            email: "maria@contato.com",
+            phone: "11987654321"
+          }
+        ]
+      },
+      response: {
+        201: {
+          description: "Contato criado com sucesso",
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            name: { type: "string" },
+            email: { type: "string" },
+            phone: { type: "string" },
+            userId: { type: "string" }
+          },
+          examples: [ 
+            {
+              id: "660e8400-e29b-41d4-a716-446655440000",
+              name: "Maria Souza",
+              email: "maria@contato.com",
+              phone: "11987654321",
+              userId: "550e8400-e29b-41d4-a716-446655440000"
+            }
+          ]
+        },
+        400: {
+          description: "Erro na requisição",
+          type: "object",
+          properties: {
+            error: { type: "string" }
+          },
+          examples: [
+            { error: "Cabeçalho 'email' ausente ou inválido" }
+          ]
+        }
+      }
+    }
+  },
     async (req, reply) => {
       const { name, email, phone } = req.body;
       const emailUserHeader = req.headers["email"];
@@ -148,10 +115,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
             email: {
               type: "string",
               format: "email",
-              examples: [{
-                value: "usuario_logado@empresa.com",
-                description: "Email do usuário logado"
-              }]
+              examples: ["usuario_logado@empresa.com"]
             },
           },
         },
@@ -164,27 +128,19 @@ export async function contactRoutes(fastify: FastifyInstance) {
               properties: {
                 id: {
                   type: "string",
-                  examples: [{
-                    value: "660e8400-e29b-41d4-a716-446655440000"
-                  }]
+                  examples: ["660e8400-e29b-41d4-a716-446655440000"]
                 },
                 name: { 
                   type: "string", 
-                  examples: [{
-                    value: "Maria Souza"
-                  }]
+                  examples: ["Maria Souza"]
                 },
                 email: { 
                   type: "string", 
-                  examples: [{
-                    value: "maria@contato.com"
-                  }]
+                  examples: ["maria@contato.com"]
                 },
                 phone: { 
                   type: "string", 
-                  examples: [{
-                    value: "11987654321"
-                  }]
+                  examples: ["11987654321"]
                 },
               },
             },
@@ -195,9 +151,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
             properties: {
               error: {
                 type: "string",
-                examples: [{
-                  value: "User not found"
-                }]
+                examples: ["User not found"]
               },
             },
           },
@@ -237,10 +191,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
           properties: {
             id: {
               type: "string",
-              examples: [{
-                value: "660e8400-e29b-41d4-a716-446655440000",
-                description: "ID do contato"
-              }]
+              examples: ["660e8400-e29b-41d4-a716-446655440000"]
             },
           },
         },
@@ -250,22 +201,16 @@ export async function contactRoutes(fastify: FastifyInstance) {
           properties: {
             name: { 
               type: "string", 
-              examples: [{
-                value: "Maria Souza Costa"
-              }]
+              examples: ["Maria Souza Costa"]
             },
             email: {
               type: "string",
               format: "email",
-              examples: [{
-                value: "maria.nova@contato.com"
-              }]
+              examples: ["maria.nova@contato.com"]
             },
             phone: { 
               type: "string", 
-              examples: [{
-                value: "11999998888"
-              }]
+              examples: ["11999998888"]
             },
           },
         },
@@ -276,27 +221,19 @@ export async function contactRoutes(fastify: FastifyInstance) {
             properties: {
               id: {
                 type: "string",
-                examples: [{
-                  value: "660e8400-e29b-41d4-a716-446655440000"
-                }]
+                examples: ["660e8400-e29b-41d4-a716-446655440000"]
               },
               name: { 
                 type: "string", 
-                examples: [{
-                  value: "Maria Souza Costa"
-                }]
+                examples: ["Maria Souza Costa"]
               },
               email: { 
                 type: "string", 
-                examples: [{
-                  value: "maria.nova@contato.com"
-                }]
+                examples: ["maria.nova@contato.com"]
               },
               phone: { 
                 type: "string", 
-                examples: [{
-                  value: "11999998888"
-                }]
+                examples: ["11999998888"]
               },
             },
           },
@@ -306,9 +243,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
             properties: {
               error: {
                 type: "string",
-                examples: [{
-                  value: "Contact not found"
-                }]
+                examples: ["Contact not found"]
               },
             },
           },
@@ -345,10 +280,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
           properties: {
             id: {
               type: "string",
-              examples: [{
-                value: "660e8400-e29b-41d4-a716-446655440000",
-                description: "ID do contato"
-              }]
+              examples: ["660e8400-e29b-41d4-a716-446655440000"]
             },
           },
         },
@@ -365,9 +297,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
               },
               message: {
                 type: "string",
-                examples: [{
-                  value: "Contact deleted"
-                }]
+                examples: ["Contact deleted"]
               },
             },
           },
@@ -377,9 +307,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
             properties: {
               error: {
                 type: "string",
-                examples: [{
-                  value: "Contact not found"
-                }]
+                examples: ["Contact not found"]
               },
             },
           },

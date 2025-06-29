@@ -84,7 +84,6 @@ export async function userRoutes(fastify: FastifyInstance) {
       });
       return reply.status(201).send(data);
     } catch (error) {
-      // ✅ Tratamento correto do erro
       console.error('Erro ao criar usuário:', error);
       
       return reply.status(400).send({
