@@ -4,7 +4,8 @@ import { UserCreate } from "../interfaces/user.interface";
 
 export async function userRoutes(fastify: FastifyInstance) {
   const userUseCase = new UserUseCase();
- fastify.post<{ Body: UserCreate }>("/", {
+  
+  fastify.post<{ Body: UserCreate }>("/", {
     schema: {
       tags: ["users"],
       summary: "Cria um novo usuário",
@@ -14,21 +15,21 @@ export async function userRoutes(fastify: FastifyInstance) {
         required: ["name", "email"],
         properties: {
           name: { 
-            type: "string", 
-            examples: [{
-              value: "Carlos Silva",
-              description: "Nome completo do usuário"
-            }]
+            type: "string",
+            description: "Nome completo do usuário"
           },
           email: { 
             type: "string", 
             format: "email",
-            examples: [{
-              value: "carlos@empresa.com",
-              description: "Email válido e único"
-            }]
+            description: "Email válido e único"
           }
-        }
+        },
+        examples: [
+          {
+            name: "Carlos Silva",
+            email: "carlos@empresa.com"
+          }
+        ]
       },
       response: {
         201: {
@@ -36,60 +37,63 @@ export async function userRoutes(fastify: FastifyInstance) {
           type: "object",
           properties: {
             id: { 
-              type: "string", 
-              examples: [{
-                value: "550e8400-e29b-41d4-a716-446655440000"
-              }]
+              type: "string"
             },
             name: { 
-              type: "string", 
-              examples: [{
-                value: "Carlos Silva"
-              }]
+              type: "string"
             },
             email: { 
-              type: "string", 
-              examples: [{
-                value: "carlos@empresa.com"
-              }]
+              type: "string"
             },
             createdAt: { 
               type: "string", 
-              format: "date-time", 
-              examples: [{
-                value: "2024-05-01T12:00:00Z"
-              }]
+              format: "date-time"
             }
-          }
+          },
+          examples: [
+            {
+              id: "550e8400-e29b-41d4-a716-446655440000",
+              name: "Carlos Silva",
+              email: "carlos@empresa.com",
+              createdAt: "2024-05-01T12:00:00Z"
+            }
+          ]
         },
         400: {
           description: "Erro na requisição",
           type: "object",
           properties: {
             error: { 
-              type: "string", 
-              examples: [{
-                value: "Usuário já existente"
-              }]
+              type: "string"
             }
-          }
+          },
+          examples: [
+            {
+              error: "Usuário já existente"
+            }
+          ]
         }
       }
     }
-    }, async (req, reply) => {
+  }, async (req, reply) => {
     const { name, email } = req.body;
     try {
       const data = await userUseCase.create({
         name,
         email,
       });
-      return reply.send(data);
+      return reply.status(201).send(data);
     } catch (error) {
-      reply.send(error);
+      // ✅ Tratamento correto do erro
+      console.error('Erro ao criar usuário:', error);
+      
+      return reply.status(400).send({
+        error: error instanceof Error ? error.message : "Erro interno do servidor"
+      });
     }
   });
 
-    fastify.get("/", {
+  fastify.get("/", {
     schema: {
       tags: ["users"],
       summary: "Health check",
@@ -97,10 +101,7 @@ export async function userRoutes(fastify: FastifyInstance) {
       response: {
         200: {
           description: 'Mensagem de saúde',
-          type: 'string',
-          examples: [{
-            value: 'hello world'
-          }]
+          type: 'string'
         }
       }
     }
