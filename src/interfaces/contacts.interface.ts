@@ -3,13 +3,13 @@ export interface Contact {
   email: string;
   name: string;
   phone: string;
-  cep?: string ; 
-  street?: string; 
-  number?: string ; 
-  district?: string ; 
-  city?: string ; 
-  state?: string; 
-  complement?: string | null; 
+  cep?: string;
+  street?: string;
+  number?: string;
+  district?: string;
+  city?: string;
+  state?: string;
+  complement?: string | null;
   userId?: string | null;
 }
 
@@ -51,6 +51,18 @@ export interface ContactRepository {
   create(data: ContactCreateData): Promise<Contact>;
   findByEmailOrPhone(email: string, phone: string): Promise<Contact | null>;
   findAllContacts(userId: string): Promise<Contact[]>;
-  updateContact({ id, name, email, phone }: Contact): Promise<Contact>;
+  updateContact({
+    id,
+    name,
+    email,
+    phone,
+    cep,
+    street,
+    number,
+    district,
+    city,
+    state,
+    complement
+  }: Contact): Promise<Contact>;
   delete(id: string): Promise<boolean>;
 }

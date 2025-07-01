@@ -208,7 +208,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
 
       try {
         const data = await contactUseCase.listAllContacts(emailUser);
-        return reply.status(201).send(data);;
+        return reply.status(200).send(data);;
       } catch (error) {
         reply.send(error);
       }
@@ -332,7 +332,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
       const { id } = req.params;
       const { name, email, phone, cep, number, complement } = req.body;
       try {
-      const data = await contactUseCase.updateContact({
+      const data: Partial<Contact> = await contactUseCase.updateContact({
         id,
         name,
         email,
@@ -404,7 +404,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
 
       try {
         const data = await contactUseCase.delete(id);
-        return reply.status(201).send(data);;
+        return reply.status(200).send(data);;
       } catch (error) {
         reply.send(error);
       }

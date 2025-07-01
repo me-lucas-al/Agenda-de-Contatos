@@ -11,11 +11,14 @@ class ContactUseCase {
         this.userRepository = new UserRepositoryPrisma();
     }
 
-    // src/usecases/contact.usecase.ts
 private async getAddressByCEP(cep: string) {
+  try {
     const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-    if (response.data.erro) throw new Error('CEP not found');
+    if (response.data.erro) throw new Error('CEP não encontrado');
     return response.data;
+  } catch (error) {
+    throw new Error('Falha ao buscar CEP: ' + (error as Error).message);
+  }
 }
 
 async create({email, name, phone, cep, number, complement, userEmail}: ContactCreate) {
@@ -25,7 +28,6 @@ async create({email, name, phone, cep, number, complement, userEmail}: ContactCr
     const contactExists = await this.contactRepository.findByEmailOrPhone(email, phone);
     if (contactExists) throw new Error("Contact already exists");
 
-    // Novo: Busca endereço
     const viaCEP = await this.getAddressByCEP(cep);
 
     return this.contactRepository.create({
