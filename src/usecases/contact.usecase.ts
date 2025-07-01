@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Contact, ContactCreate, ContactRepository } from "../interfaces/contacts.interface";
 import { ContactsRepositoryPrisma } from "../repositories/contacts.repository";
 import { UserRepositoryPrisma } from "../repositories/user.repository";
@@ -10,27 +11,37 @@ class ContactUseCase {
         this.userRepository = new UserRepositoryPrisma();
     }
 
-    async create({email, name, phone, userEmail}: ContactCreate) {
-        const user = await this.userRepository.findByEmail(userEmail);
+    // src/usecases/contact.usecase.ts
+private async getAddressByCEP(cep: string) {
+    const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+    if (response.data.erro) throw new Error('CEP not found');
+    return response.data;
+}
 
-        if(!user){
-            throw new Error("User not found");
-        }
+async create({email, name, phone, cep, number, complement, userEmail}: ContactCreate) {
+    const user = await this.userRepository.findByEmail(userEmail);
+    if (!user) throw new Error("User not found");
 
-        const verifyIfExistsContact = await this.contactRepository.findByEmailOrPhone(email, phone);
+    const contactExists = await this.contactRepository.findByEmailOrPhone(email, phone);
+    if (contactExists) throw new Error("Contact already exists");
 
-        if(verifyIfExistsContact){
-            throw new Error("Contato já existente!")
-        }
+    // Novo: Busca endereço
+    const viaCEP = await this.getAddressByCEP(cep);
 
-        const contact = await this.contactRepository.create({
-            email,
-            name,
-            phone,
-            userId: user.id,
-        });
-        return contact;
-    }
+    return this.contactRepository.create({
+        email,
+        name,
+        phone,
+        cep,
+        street: viaCEP.logradouro,
+        number,
+        district: viaCEP.bairro,
+        city: viaCEP.localidade,
+        state: viaCEP.uf,
+        complement,
+        userId: user.id,
+    });
+}
     async listAllContacts(userEmail: string) {
         const user = await this.userRepository.findByEmail(userEmail);
 
