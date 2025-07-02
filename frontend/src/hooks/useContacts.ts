@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Contact, ContactCreate } from '../types/contacts.d';
 
 export const useContacts = () => {
+    const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,8 +45,9 @@ export const useContacts = () => {
       if (!response.ok) {
         throw new Error(await response.text());
       }
-
-      return await response.json();
+const data = await response.json();
+      setContacts(data);
+      return data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao buscar contatos');
       throw err;
@@ -105,6 +107,7 @@ export const useContacts = () => {
   };
 
   return {
+    contacts,
     loading,
     error,
     createContact,

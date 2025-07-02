@@ -1,23 +1,40 @@
 import { useState, useEffect } from 'react';
 import { Contact, ContactCreate } from '../types/contacts.d';
 
+interface ContactFormData {
+  name: string;
+  email: string;
+  phone: string;
+  cep: string;
+  street: string;
+  number: string;
+  district: string;
+  city: string;
+  state: string;
+  complement?: string;
+  userId?: string;
+}
+
 interface ContactFormProps {
   initialData?: Partial<Contact>;
-  onSubmit: (data: ContactCreate | Partial<Contact>) => Promise<void>;
+  onSubmit: (data: ContactFormData) => Promise<void>;
   onCancel?: () => void;
 }
 
 export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProps) => {
-  const [formData, setFormData] = useState<ContactCreate | Partial<Contact>>(
-    initialData || {
-      name: '',
-      email: '',
-      phone: '',
-      cep: '',
-      number: '',
-      complement: '',
-    }
-  );
+  const [formData, setFormData] = useState<ContactFormData>({
+    name: initialData?.name || '',
+    email: initialData?.email || '',
+    phone: initialData?.phone || '',
+    cep: initialData?.cep || '',
+    street: initialData?.street || '',
+    number: initialData?.number || '',
+    district: initialData?.district || '',
+    city: initialData?.city || '',
+    state: initialData?.state || '',
+    complement: initialData?.complement || '',
+    userId: initialData?.userId,
+  });
 
   const [loadingCep, setLoadingCep] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -42,10 +59,10 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
 
       setFormData(prev => ({
         ...prev,
-        street: data.logradouro,
-        district: data.bairro,
-        city: data.localidade,
-        state: data.uf,
+        street: data.logradouro || '',
+        district: data.bairro || '',
+        city: data.localidade || '',
+        state: data.uf || '',
       }));
       setErrors(prev => ({ ...prev, cep: '' }));
     } catch (error) {
@@ -57,13 +74,19 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.phone || !formData.cep || !formData.number) {
+      setErrors({ general: 'Preencha todos os campos obrigatórios' });
+      return;
+    }
+
     try {
       await onSubmit(formData);
     } catch (error) {
       console.error('Erro ao enviar formulário:', error);
+      setErrors({ general: 'Erro ao salvar contato' });
     }
   };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
