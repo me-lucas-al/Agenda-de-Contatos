@@ -92,6 +92,61 @@ export async function userRoutes(fastify: FastifyInstance) {
     }
   });
 
+    fastify.post<{ Body: { email: string } }>("/login", {
+    schema: {
+      tags: ["users"],
+      summary: "Login do usuário",
+      description: "Verifica se o e-mail existe no sistema",
+      body: {
+        type: "object",
+        required: ["email"],
+        properties: {
+          email: {
+            type: "string",
+            format: "email",
+          },
+        },
+        examples: [
+          {
+            email: "carlos@empresa.com",
+          },
+        ],
+      },
+      response: {
+        200: {
+          description: "Usuário encontrado",
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            name: { type: "string" },
+            email: { type: "string" },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+        404: {
+          description: "Usuário não encontrado",
+          type: "object",
+          properties: {
+            error: { type: "string" },
+          },
+        },
+      },
+    },
+  }, async (req, reply) => {
+    const { email } = req.body;
+
+    try {
+      const user = await userUseCase.findByEmail(email);
+      if (!user) {
+        return reply.status(404).send({ error: "Usuário não encontrado" });
+      }
+      return reply.status(200).send(user);
+    } catch (error) {
+      console.error("Erro ao fazer login:", error);
+      return reply.status(500).send({ error: "Erro interno no servidor" });
+    }
+  });
+
   fastify.get("/", {
     schema: {
       tags: ["users"],

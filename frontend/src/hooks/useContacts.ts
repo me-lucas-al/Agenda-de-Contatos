@@ -1,55 +1,46 @@
-import { useState } from 'react';
-import { Contact, ContactCreate } from '../types/contacts.d';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Contact, ContactCreate } from '../types/contacts';
+import { useAuth } from '../contexts/AuthContext';
+import { contactsApi } from "../app/api/api"
 
 export const useContacts = () => {
-    const [contacts, setContacts] = useState<Contact[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { email } = useAuth();
 
-  const createContact = async (contactData: ContactCreate) => {
+  const fetchContacts = async () => {
+    if (!email) {
+      setContacts([]);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/contacts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'email': localStorage.getItem('userEmail') || '',
-        },
-        body: JSON.stringify(contactData),
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      return await response.json();
+      const data = await contactsApi.getContacts(email);
+      setContacts(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar contato');
-      throw err;
+      setError(err instanceof Error ? err.message : 'Erro ao carregar contatos');
     } finally {
       setLoading(false);
     }
   };
 
-  const getContacts = async () => {
+  const createContact = async (contactData: ContactCreate) => {
+    if (!email) throw new Error('Usuário não autenticado');
+    
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/contacts', {
-        headers: {
-          'email': localStorage.getItem('userEmail') || '',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-const data = await response.json();
-      setContacts(data);
-      return data;
+      const newContact = await contactsApi.createContact(contactData, email);
+      setContacts(prev => [...prev, newContact]);
+      return newContact;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao buscar contatos');
+      const message = err instanceof Error ? err.message : 'Erro ao criar contato';
+      setError(message);
       throw err;
     } finally {
       setLoading(false);
@@ -57,25 +48,19 @@ const data = await response.json();
   };
 
   const updateContact = async (id: string, contactData: Partial<Contact>) => {
+    if (!email) throw new Error('Usuário não autenticado');
+    
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/contacts/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'email': localStorage.getItem('userEmail') || '',
-        },
-        body: JSON.stringify(contactData),
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      return await response.json();
+      const updatedContact = await contactsApi.updateContact(id, contactData, email);
+      setContacts(prev => 
+        prev.map(contact => contact.id === id ? updatedContact : contact)
+      );
+      return updatedContact;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao atualizar contato');
+      const message = err instanceof Error ? err.message : 'Erro ao atualizar contato';
+      setError(message);
       throw err;
     } finally {
       setLoading(false);
@@ -83,35 +68,33 @@ const data = await response.json();
   };
 
   const deleteContact = async (id: string) => {
+    if (!email) throw new Error('Usuário não autenticado');
+    
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/contacts/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'email': localStorage.getItem('userEmail') || '',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      return await response.json();
+      await contactsApi.deleteContact(id, email);
+      setContacts(prev => prev.filter(contact => contact.id !== id));
+      return true;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao deletar contato');
+      const message = err instanceof Error ? err.message : 'Erro ao deletar contato';
+      setError(message);
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchContacts();
+  }, [email]);
+
   return {
     contacts,
     loading,
     error,
     createContact,
-    getContacts,
+    getContacts: fetchContacts,
     updateContact,
     deleteContact,
   };

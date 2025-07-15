@@ -56,10 +56,42 @@ async create({email, name, phone, cep, number, complement, userEmail}: ContactCr
         return contacts;
     }
 
-    async updateContact({id, name, email, phone}: Contact){
-        const data = await this.contactRepository.updateContact({id, name, email, phone});
-
-        return data;
+     async updateContact({id, name, email, phone, cep, street, number, district, city, state, complement}: Contact) {
+        if (cep && cep.trim() !== "") {
+            try {
+                const viaCEP = await this.getAddressByCEP(cep);
+                
+                return this.contactRepository.updateContact({
+                    id,
+                    name,
+                    email,
+                    phone,
+                    cep,
+                    street: viaCEP.logradouro,
+                    number,
+                    district: viaCEP.bairro,
+                    city: viaCEP.localidade,
+                    state: viaCEP.uf,
+                    complement,
+                });
+            } catch (error) {
+                throw new Error('Erro ao buscar endereço pelo CEP: ' + (error as Error).message);
+            }
+        }
+        
+        return this.contactRepository.updateContact({
+            id,
+            name,
+            email,
+            phone,
+            cep: cep || "",
+            street: street || "",
+            number,
+            district: district || "",
+            city: city || "",
+            state: state || "",
+            complement,
+        });
     }
 
     async delete(id: string) {

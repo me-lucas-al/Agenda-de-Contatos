@@ -38,22 +38,46 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
 
   const [loadingCep, setLoadingCep] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [cepValidated, setCepValidated] = useState(false);
+
+  useEffect(() => {
+    if (initialData?.cep && initialData.cep.length === 8) {
+      validateCep(initialData.cep);
+    }
+  }, [initialData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    
+    if (name === 'cep') {
+      setCepValidated(false);
+      if (value.length < 8) {
+        setFormData(prev => ({
+          ...prev,
+          [name]: value,
+          street: '',
+          district: '',
+          city: '',
+          state: '',
+        }));
+        return;
+      }
+    }
+    
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleCepBlur = async () => {
-    if (!formData.cep || formData.cep.length !== 8) return;
+  const validateCep = async (cep: string) => {
+    if (!cep || cep.length !== 8) return;
 
     setLoadingCep(true);
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${formData.cep}/json/`);
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
       const data = await response.json();
 
       if (data.erro) {
         setErrors(prev => ({ ...prev, cep: 'CEP não encontrado' }));
+        setCepValidated(false);
         return;
       }
 
@@ -65,11 +89,17 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
         state: data.uf || '',
       }));
       setErrors(prev => ({ ...prev, cep: '' }));
+      setCepValidated(true);
     } catch (error) {
       setErrors(prev => ({ ...prev, cep: 'Erro ao buscar CEP' }));
+      setCepValidated(false);
     } finally {
       setLoadingCep(false);
     }
+  };
+
+  const handleCepBlur = async () => {
+    await validateCep(formData.cep);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,6 +110,11 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
       return;
     }
 
+    if (!cepValidated) {
+      setErrors({ general: 'CEP deve ser válido antes de salvar' });
+      return;
+    }
+
     try {
       await onSubmit(formData);
     } catch (error) {
@@ -87,8 +122,15 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
       setErrors({ general: 'Erro ao salvar contato' });
     }
   };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {errors.general && (
+        <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {errors.general}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -147,10 +189,15 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
             onChange={handleChange}
             onBlur={handleCepBlur}
             required
+            maxLength={8}
+            placeholder="00000000"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
           />
           {errors.cep && <p className="mt-1 text-sm text-red-600">{errors.cep}</p>}
           {loadingCep && <p className="mt-1 text-sm text-gray-500">Buscando CEP...</p>}
+          {cepValidated && !loadingCep && (
+            <p className="mt-1 text-sm text-green-600">CEP válido ✓</p>
+          )}
         </div>
 
         <div>
@@ -163,8 +210,11 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
             name="street"
             value={formData.street || ''}
             onChange={handleChange}
-            readOnly={loadingCep}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-gray-100"
+            disabled={!cepValidated || loadingCep}
+            placeholder={!cepValidated ? "Digite o CEP primeiro" : ""}
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm ${
+              !cepValidated || loadingCep ? 'bg-gray-100 cursor-not-allowed' : ''
+            }`}
           />
         </div>
 
@@ -179,7 +229,11 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
             value={formData.number || ''}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+            disabled={!cepValidated}
+            placeholder={!cepValidated ? "Digite o CEP primeiro" : ""}
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm ${
+              !cepValidated ? 'bg-gray-100 cursor-not-allowed' : ''
+            }`}
           />
         </div>
 
@@ -193,8 +247,11 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
             name="district"
             value={formData.district || ''}
             onChange={handleChange}
-            readOnly={loadingCep}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-gray-100"
+            disabled={!cepValidated || loadingCep}
+            placeholder={!cepValidated ? "Digite o CEP primeiro" : ""}
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm ${
+              !cepValidated || loadingCep ? 'bg-gray-100 cursor-not-allowed' : ''
+            }`}
           />
         </div>
 
@@ -208,8 +265,11 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
             name="city"
             value={formData.city || ''}
             onChange={handleChange}
-            readOnly={loadingCep}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-gray-100"
+            disabled={!cepValidated || loadingCep}
+            placeholder={!cepValidated ? "Digite o CEP primeiro" : ""}
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm ${
+              !cepValidated || loadingCep ? 'bg-gray-100 cursor-not-allowed' : ''
+            }`}
           />
         </div>
 
@@ -223,8 +283,11 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
             name="state"
             value={formData.state || ''}
             onChange={handleChange}
-            readOnly={loadingCep}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-gray-100"
+            disabled={!cepValidated || loadingCep}
+            placeholder={!cepValidated ? "Digite o CEP primeiro" : ""}
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm ${
+              !cepValidated || loadingCep ? 'bg-gray-100 cursor-not-allowed' : ''
+            }`}
           />
         </div>
 
@@ -238,7 +301,11 @@ export const ContactForm = ({ initialData, onSubmit, onCancel }: ContactFormProp
             name="complement"
             value={formData.complement || ''}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+            disabled={!cepValidated}
+            placeholder={!cepValidated ? "Digite o CEP primeiro" : ""}
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm ${
+              !cepValidated ? 'bg-gray-100 cursor-not-allowed' : ''
+            }`}
           />
         </div>
       </div>

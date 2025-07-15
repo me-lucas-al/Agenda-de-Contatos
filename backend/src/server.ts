@@ -9,7 +9,12 @@ const app: FastifyInstance = fastify({
   logger: true,
 });
 
-app.register(fastifyCors,{ origin: '*' })
+app.register(fastifyCors, {
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'email'], 
+  credentials: true
+});
 app.register(swagger, {
   openapi: {
     info: {
