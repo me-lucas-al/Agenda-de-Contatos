@@ -5,6 +5,8 @@ import { UserCreate } from "../interfaces/user.interface";
 export async function userRoutes(fastify: FastifyInstance) {
   const userUseCase = new UserUseCase();
   
+  console.log("✅ Rotas de usuário foram carregadas!");
+
   fastify.post<{ Body: UserCreate }>("/", {
     schema: {
       tags: ["users"],
