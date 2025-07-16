@@ -1,6 +1,6 @@
 import { Contact, ContactCreate } from "@/types/contacts";
 
-const API_URL = 'http://localhost:3100';
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export const usersApi = {
   async healthCheck() {
