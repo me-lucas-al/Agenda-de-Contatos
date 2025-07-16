@@ -1,6 +1,6 @@
 import { Contact, ContactCreate } from "@/types/contacts";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+const API_URL = process.env.NEXT_PUBLIC_API_URL! || "https://agenda-de-contatos.onrender.com";
 
 export const usersApi = {
   async healthCheck() {
