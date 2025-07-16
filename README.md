@@ -76,8 +76,8 @@ star-seg-challenge/
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/star-seg-challenge.git
-cd star-seg-challenge
+git clone github.com/me-lucas-al/Agenda-de-Contatos.git
+cd agenda-de-contatos
 ```
 
 ### 2. Instale as dependências
