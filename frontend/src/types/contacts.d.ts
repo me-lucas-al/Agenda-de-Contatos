@@ -22,6 +22,14 @@ export interface ContactCreate {
   complement?: string | null;
   userEmail: string;
 }
+export interface ContactFormData {
+  email: string;
+  name: string;
+  phone: string;
+  cep: string;
+  number: string;
+  complement?: string | null;
+}
 
 export interface ViaCEPResponse {
   cep: string;

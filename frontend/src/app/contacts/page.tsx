@@ -6,7 +6,7 @@ import { ContactForm } from '../../components/ContactForm';
 import { ContactList } from '../../components/ContactList';
 import { useAuth } from '../../contexts/AuthContext';
 import { useContacts } from '../../hooks/useContacts';
-import { ContactCreate } from '../../types/contacts';
+import { ContactCreate, ContactFormData } from '@/types/contacts';
 
 // Componente separado para usar useSearchParams
 function ContactsContent() {
@@ -28,14 +28,18 @@ function ContactsContent() {
     }
   }, [isLoading, email, router, searchParams]);
 
-  const handleCreateContact = async (data: ContactCreate) => {
-    try {
-      await createContact(data);
-      setShowAddForm(false);
-    } catch (error) {
-      console.error('Erro ao criar contato:', error);
-    }
-  };
+  const handleCreateContact = async (data: ContactFormData) => {
+  try {
+    const contactData: ContactCreate = {
+      ...data,
+      userEmail: email!,
+    };
+    await createContact(contactData);
+    setShowAddForm(false);
+  } catch (error) {
+    console.error('Erro ao criar contato:', error);
+  }
+};
 
   const handleUpdateContact = async (id: string, contactData: any) => {
     try {
