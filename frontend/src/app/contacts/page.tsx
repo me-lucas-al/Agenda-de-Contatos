@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Header } from '../../components/Header';
 import { ContactForm } from '../../components/ContactForm';
@@ -8,11 +8,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useContacts } from '../../hooks/useContacts';
 import { ContactCreate } from '../../types/contacts';
 
-export default function ContactsPage() {
+// Componente separado para usar useSearchParams
+function ContactsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { email, isLoading } = useAuth();
-  const { contacts, loading, createContact, updateContact, deleteContact } = useContacts();
+  const { contacts, loading, error, createContact, updateContact, deleteContact } = useContacts();
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -29,10 +30,7 @@ export default function ContactsPage() {
 
   const handleCreateContact = async (data: ContactCreate) => {
     try {
-      await createContact({
-        ...data,
-        userEmail: email!
-      });
+      await createContact(data);
       setShowAddForm(false);
     } catch (error) {
       console.error('Erro ao criar contato:', error);
@@ -86,6 +84,12 @@ export default function ContactsPage() {
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {error && (
+          <div className="bg-red-800 border border-red-600 text-red-200 px-4 py-3 rounded mb-4">
+            <p>{error}</p>
+          </div>
+        )}
+
         <div className="bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -234,5 +238,29 @@ export default function ContactsPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+// Componente de loading para o Suspense
+function ContactsLoading() {
+  return (
+    <div className="min-h-screen bg-gray-900">
+      <Header />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          <span className="ml-4 text-gray-400">Carregando...</span>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// Componente principal com Suspense
+export default function ContactsPage() {
+  return (
+    <Suspense fallback={<ContactsLoading />}>
+      <ContactsContent />
+    </Suspense>
   );
 }
