@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '../../components/Header';
 import { usersApi } from '../api/api';
+import Link from 'next/link';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -135,12 +136,12 @@ export default function Register() {
             <div className="mt-6 text-center">
               <p className="text-gray-400 text-sm">
                 Já tem uma conta?{' '}
-                <a 
+                <Link
                   href="/" 
                   className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200"
                 >
                   Faça login
-                </a>
+                </Link>
               </p>
             </div>
           </div>

@@ -40,6 +40,10 @@ app.register(contactRoutes, { prefix: "/contacts" });
 
 const start = async () => {
   try {
+    app.get('/', async () => {
+  return { status: 'online', message: 'Agenda API funcionando 🚀' };
+});
+
     await app.listen({ port: 3100, host: '0.0.0.0' });
     console.log("🚀 Server running at http://localhost:3100");
     console.log("📚 Swagger docs at http://localhost:3100/docs");

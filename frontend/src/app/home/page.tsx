@@ -8,9 +8,8 @@ import { useEffect, useState } from 'react';
 
 export default function Home() {
   const router = useRouter();
-  const { email, name, logout, isLoading } = useAuth();
-  const { contacts, loading: contactsLoading, createContact, updateContact, deleteContact } = useContacts();
-  const [showAddForm, setShowAddForm] = useState(false);
+  const { email, name, isLoading } = useAuth();
+  const { contacts, loading: contactsLoading} = useContacts();
   const [stats, setStats] = useState({
     totalContacts: 0,
     recentContacts: 0,

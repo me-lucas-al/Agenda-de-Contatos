@@ -26,7 +26,7 @@ export default function ContactsPage() {
     }
   }, [isLoading, email, router, searchParams]);
 
-  const handleCreateContact = async (contactData: any) => {
+  const handleCreateContact = async (data: ContactData) => {
     try {
       await createContact({
         ...contactData,
