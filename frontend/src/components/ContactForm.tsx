@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Contact, ContactCreate } from '../types/contacts.d';
+import { Contact } from '../types/contacts.d';
 
 interface ContactFormData {
   name: string;

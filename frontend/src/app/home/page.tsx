@@ -36,8 +36,6 @@ export default function Home() {
 
   useEffect(() => {
     if (contacts.length > 0) {
-      const now = new Date();
-      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       
       setStats({
         totalContacts: contacts.length,

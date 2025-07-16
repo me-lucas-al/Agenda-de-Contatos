@@ -6,6 +6,7 @@ import { ContactForm } from '../../components/ContactForm';
 import { ContactList } from '../../components/ContactList';
 import { useAuth } from '../../contexts/AuthContext';
 import { useContacts } from '../../hooks/useContacts';
+import { ContactCreate } from '../../types/contacts';
 
 export default function ContactsPage() {
   const router = useRouter();
@@ -26,10 +27,10 @@ export default function ContactsPage() {
     }
   }, [isLoading, email, router, searchParams]);
 
-  const handleCreateContact = async (data: ContactData) => {
+  const handleCreateContact = async (data: ContactCreate) => {
     try {
       await createContact({
-        ...contactData,
+        ...data,
         userEmail: email!
       });
       setShowAddForm(false);

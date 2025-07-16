@@ -8,13 +8,6 @@ export const Header = () => {
   const { email, name, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const getInitials = (name: string | null, email: string | null) => {
-    if (name) {
-      return name.split(' ').map(n => n[0]).join('').toUpperCase();
-    }
-    return email ? email[0].toUpperCase() : 'U';
-  };
-
   return (
     <header className="bg-gray-900/95 backdrop-blur-lg border-b border-gray-700/50 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
