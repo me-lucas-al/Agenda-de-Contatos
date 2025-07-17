@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [showRenderNotice, setShowRenderNotice] = useState(true);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
@@ -40,7 +41,42 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-900">
       <Header />
-      
+      {showRenderNotice && (
+  <div className="relative mx-auto max-w-4xl px-4 pt-6">
+    <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-4 backdrop-blur-sm animate-fade-in">
+      <div className="flex items-start justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="flex-shrink-0">
+            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <p className="text-sm text-gray-300">
+              <span className="font-medium text-blue-400">Hospedagem gratuita:</span> O primeiro acesso pode demorar até 30 segundos para carregar. 
+              Se encontrar lentidão, aguarde um momento e{' '}
+              <button 
+                onClick={() => window.location.reload()} 
+                className="text-blue-400 hover:text-blue-300 underline transition-colors"
+              >
+                atualize a página
+              </button>
+              {' '}para aquecer o servidor.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setShowRenderNotice(false)}
+          className="flex-shrink-0 ml-4 text-gray-400 hover:text-gray-300 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       <main className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="animate-fade-in">
           <div className="text-center mb-8">
