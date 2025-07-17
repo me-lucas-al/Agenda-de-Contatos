@@ -146,7 +146,7 @@ docker build -t agenda-api .
 ### 4. Execute o Container
 
 ```bash
-docker run -d --name agenda-api-container -p 3100:3100 --env-file .env agenda-api
+docker run -d --name agenda -p 3100:3100 --env-file .env agenda
 ```
 
 ### 5. Inicie o Frontend
