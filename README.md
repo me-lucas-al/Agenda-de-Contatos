@@ -78,7 +78,7 @@ Isso pode afetar principalmente funcionalidades que dependem de autenticação, 
 ## 📁 Estrutura do Projeto
 
 ```
-star-seg-challenge/
+agenda-de-contatos/
 ├── backend/           # API REST (Fastify + Prisma + PostgreSQL)
 │   ├── src/
 │   ├── prisma/
