@@ -26,7 +26,7 @@ export default function Register() {
 
     try {
       await usersApi.create({ name, email });
-      router.push('/login');
+      router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao cadastrar usuário');
     } finally {
