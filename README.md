@@ -103,14 +103,14 @@ cd agenda-de-contatos # ou abra a pasta agenda-de-contatos
 
 #### Frontend
 ```bash
-cd frontend # ou apenas abra a pasta frontend e execute o npm install
+cd frontend # ou apenas abra a pasta frontend 
 npm install
 npm install next react react-dom -D @eslint/eslintrc @types/node @types/react @types/react-dom autoprefixer eslint eslint-config-next postcss tailwindcss typescript
 ```
 
 #### Backend
 ```bash
-cd backend # ou apenas abra a pasta backend e execute o npm install
+cd backend # ou apenas abra a pasta backend 
 npm install
 npm install @fastify/cors @fastify/swagger @fastify/swagger-ui @prisma/client axios fastify -D @types/node prisma ts-node tsx typescript
 ```
@@ -139,8 +139,8 @@ NODE_ENV=development
 ### 3. Build da Imagem Docker
 
 ```bash
-cd backend # ou apenas abra a pasta backend e execute o npm run dev
-docker build -t agenda-api .
+cd backend # ou apenas abra a pasta backend 
+docker build -t agenda .
 ```
 
 ### 4. Execute o Container
@@ -152,7 +152,7 @@ docker run -d --name agenda -p 3100:3100 --env-file .env agenda
 ### 5. Inicie o Frontend
 
 ```bash
-cd frontend # ou apenas abra a pasta frontend e execute o npm run dev
+cd frontend # ou apenas abra a pasta frontend 
 npm run dev
 ```
 
@@ -189,14 +189,14 @@ NODE_ENV=development
 ### 4. Inicie o Backend
 
 ```bash
-cd backend  # ou apenas abra a pasta backend e execute o npm run dev
+cd backend  # ou apenas abra a pasta backend 
 npm run dev
 ```
 
 ### 5. Inicie o Frontend (em outro terminal)
 
 ```bash
-cd frontend # ou apenas abra a pasta frontend e execute o npm run dev
+cd frontend # ou apenas abra a pasta frontend
 npm run dev
 ```
 
@@ -215,7 +215,6 @@ npm run dev
 ### Para execução sem Docker:
 1. **PostgreSQL:** Certifique-se de que o serviço PostgreSQL está rodando antes de iniciar a aplicação
 2. **pgAdmin4:** Use para gerenciar o banco de dados graficamente
-3. **Prisma Studio:** Execute `npx prisma studio` para visualizar e editar dados do banco
 
 ### Geral:
 - **Swagger:** Use a documentação interativa para testar a API facilmente
