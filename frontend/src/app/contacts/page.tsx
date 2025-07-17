@@ -8,7 +8,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useContacts } from '../../hooks/useContacts';
 import { ContactCreate, ContactFormData } from '@/types/contacts';
 
-// Componente separado para usar useSearchParams
 function ContactsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -245,7 +244,6 @@ function ContactsContent() {
   );
 }
 
-// Componente de loading para o Suspense
 function ContactsLoading() {
   return (
     <div className="min-h-screen bg-gray-900">
@@ -260,7 +258,6 @@ function ContactsLoading() {
   );
 }
 
-// Componente principal com Suspense
 export default function ContactsPage() {
   return (
     <Suspense fallback={<ContactsLoading />}>

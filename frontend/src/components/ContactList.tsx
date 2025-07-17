@@ -47,7 +47,6 @@ export const ContactList = ({ contacts, onUpdate, onDelete }: ContactListProps) 
 
   return (
     <div className="space-y-4">
-      {/* Desktop Table View */}
       <div className="hidden lg:block">
         <div className="card overflow-hidden animate-fade-in">
           <div className="overflow-x-auto">
@@ -138,7 +137,6 @@ export const ContactList = ({ contacts, onUpdate, onDelete }: ContactListProps) 
         </div>
       </div>
 
-      {/* Mobile Card View */}
       <div className="lg:hidden space-y-4">
         {contacts.map((contact, index) => (
           <div key={contact.id} className="card p-6 hover-glow transition-all duration-300 animate-slide-up" style={{animationDelay: `${index * 0.1}s`}}>

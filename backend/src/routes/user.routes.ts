@@ -156,7 +156,7 @@ export async function userRoutes(fastify: FastifyInstance) {
       description: "Rota simples para testar se a API está funcionando",
       response: {
         200: {
-          description: 'Mensagem de saúde',
+          description: 'Verificação do funcionamento da API',
           type: 'string'
         }
       }
