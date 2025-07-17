@@ -96,7 +96,7 @@ agenda-de-contatos/
 
 ```bash
 git clone github.com/me-lucas-al/Agenda-de-Contatos.git
-cd agenda-de-contatos
+cd agenda-de-contatos # ou abra a pasta agenda-de-contatos
 ```
 
 ### 2. Instale as Dependências
