@@ -105,14 +105,12 @@ cd agenda-de-contatos # ou abra a pasta agenda-de-contatos
 ```bash
 cd frontend # ou apenas abra a pasta frontend 
 npm install
-npm install next react react-dom -D @eslint/eslintrc @types/node @types/react @types/react-dom autoprefixer eslint eslint-config-next postcss tailwindcss typescript
 ```
 
 #### Backend
 ```bash
 cd backend # ou apenas abra a pasta backend 
 npm install
-npm install @fastify/cors @fastify/swagger @fastify/swagger-ui @prisma/client axios fastify -D @types/node prisma ts-node tsx typescript
 ```
 
 **Nota:** O comando `npm install` irá instalar automaticamente todas as dependências listadas no arquivo `package.json` de cada projeto. Todos os comandos podem ser executados diretamente no terminal integrado do VS Code (Ctrl+` ou Ctrl+Shift+`).
