@@ -10,7 +10,7 @@ const app: FastifyInstance = fastify({
 });
 
 app.register(fastifyCors, {
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://agenda-de-contatos-starseg.vercel.app'],
+  origin: true, // Reflete a origem da requisição, mitigando erros de CORS com Vercel/Render
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'email'], 
   credentials: true
