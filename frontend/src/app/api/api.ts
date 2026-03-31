@@ -10,36 +10,53 @@ export const usersApi = {
   },
 
   async create(user: { name: string; email: string }) {
-    const response = await fetch(`${API_URL}/users`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(user),
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Erro ao criar usuário');
+    try {
+      const response = await fetch(`${API_URL}/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Erro ao criar usuário. O e-mail pode já estar em uso.');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Não foi possível conectar ao servidor do Render. Ele pode estar "acordando", tente novamente em instantes.');
+      }
+      throw error;
     }
-    
-    return await response.json();
   },
 
   async login(email: string) {
-    const response = await fetch(`${API_URL}/users/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email }),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Usuário não encontrado');
+    try {
+      const response = await fetch(`${API_URL}/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Usuário não encontrado. Verifique seu e-mail ou cadastre-se.');
+        }
+        throw new Error('Erro ao fazer login. O servidor pode estar instável ou em manutenção.');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Não foi possível conectar ao servidor do Render. Ele pode estar "acordando", tente novamente em instantes.');
+      }
+      throw error;
     }
-    
-    return await response.json();
   }
 };
 

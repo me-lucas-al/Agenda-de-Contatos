@@ -28,7 +28,11 @@ export default function Register() {
       await usersApi.create({ name, email });
       router.push('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao cadastrar usuário');
+      if (err instanceof Error && err.message.includes('servidor do Render')) {
+        setError('O servidor está acordando... Por favor, aguarde alguns segundos e tente novamente.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Erro ao cadastrar usuário');
+      }
     } finally {
       setLoading(false);
     }

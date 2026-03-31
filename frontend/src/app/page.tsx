@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '../components/Header';
 import { usersApi } from "./api/api";
@@ -11,8 +11,15 @@ export default function Login() {
   const [error, setError] = useState('');
   const [showRenderNotice, setShowRenderNotice] = useState(true);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, email: currentEmail, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
+
+  // Redireciona automaticamente se o usuário já estiver logado
+  useEffect(() => {
+    if (!isAuthLoading && currentEmail) {
+      router.push('/home');
+    }
+  }, [isAuthLoading, currentEmail, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +39,11 @@ export default function Login() {
       
       router.push('/home');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer login');
+      if (err instanceof Error && err.message.includes('servidor do Render')) {
+        setError('O servidor está acordando... Por favor, aguarde alguns segundos e tente novamente.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Erro ao fazer login');
+      }
     } finally {
       setLoading(false);
     }
