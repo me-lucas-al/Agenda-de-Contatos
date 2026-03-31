@@ -10,7 +10,7 @@ export interface Contact {
   city?: string;
   state?: string;
   complement?: string | null;
-  userId?: string | null;
+  userId?: string | null
 }
 
 export interface ContactCreate {
