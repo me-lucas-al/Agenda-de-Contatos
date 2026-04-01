@@ -4,6 +4,7 @@ WORKDIR /usr/app
 
 COPY package*.json ./
 
+RUN corepack enable && corepack prepare pnpm@latest --activate
 RUN pnpm install
 
 COPY . .
