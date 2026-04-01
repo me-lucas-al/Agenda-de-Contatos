@@ -7,81 +7,80 @@ export async function contactRoutes(fastify: FastifyInstance) {
   const contactUseCase = new ContactUseCase();
   fastify.addHook("preHandler", authMiddleware);
   
-  fastify.post<{ Body: ContactCreate, Headers: { email: string } }>
-  ("/",
-  {
-    schema: {
-      tags: ["contacts"],
-      summary: "Cria um novo contato com endereço",
-      description: "Associa um contato ao usuário autenticado (via email no header) e completa automaticamente o endereço via CEP",
-      headers: {
-        type: "object",
-        required: ["email"],
-        properties: {
-          email: {
-            type: "string",
-            format: "email",
-            examples: ["usuario_logado@empresa.com"] 
+  fastify.post<{ Body: ContactCreate, Headers: { email: string } }>(
+    "/",
+    {
+      schema: {
+        tags: ["contacts"],
+        summary: "Cria um novo contato com endereço",
+        description: "Associa um contato ao usuário autenticado (via email no header) e completa automaticamente o endereço via CEP",
+        headers: {
+          type: "object",
+          required: ["email"],
+          properties: {
+            email: {
+              type: "string",
+              format: "email",
+              examples: ["usuario_logado@empresa.com"] 
+            },
           },
         },
-      },
-      body: {
-        type: "object",
-        required: ["name", "email", "phone", "cep", "number"],
-        properties: {
-          name: { type: "string" },
-          email: { type: "string", format: "email" },
-          phone: { type: "string" },
-          cep: { type: "string", pattern: "^\\d{5}-?\\d{3}$", examples: ["01001000"] },
-          number: { type: "string", examples: ["150"] },
-          complement: { type: "string", examples: ["Apto 101"] }
-        },
-        examples: [ 
-          {
-            name: "Maria Souza",
-            email: "maria@contato.com",
-            phone: "11987654321",
-            cep: "01001000",
-            number: "150",
-            complement: "Apto 101"
-          }
-        ]
-      },
-      response: {
-        201: {
-          description: "Contato criado com sucesso",
+        body: {
           type: "object",
+          required: ["name", "email", "phone", "cep", "number"],
           properties: {
-            id: { type: "string", examples: ["2a69e5e1-0fba-4f1a-9e87-b67aacc68c88" ]},
-            name: { type: "string", examples: ["Maria Souza" ]},
-            email: { type: "string", examples: ["maria@contato.com" ]},
-            phone: { type: "string", examples: ["11987654321"] },
-            cep: { type: "string", examples: ["01001000"] },
-            street: { type: "string", examples: ["Praça da Sé" ]},
-            number: { type: "string", examples: ["150" ]},
-            district: { type: "string", examples: ["Sé" ]},
-            city: { type: "string", examples: ["São Paulo" ]},
-            state: { type: "string", examples: ["SP" ]},
-            complement: { type: "string", examples: ["Apto 101"] },
-            userId: { type: "string", examples: ["90c1c791-4cf5-43d3-98b7-d59a943805eb" ]}
-          }
-           
-        },
-        400: {
-          description: "Erro na requisição",
-          type: "object",
-          properties: {
-            error: { type: "string" }
+            name: { type: "string" },
+            email: { type: "string", format: "email" },
+            phone: { type: "string" },
+            cep: { type: "string", pattern: "^\\d{5}-?\\d{3}$", examples: ["01001000"] },
+            number: { type: "string", examples: ["150"] },
+            complement: { type: "string", examples: ["Apto 101"] }
           },
-          examples: [
-            { error: "Cabeçalho 'email' ausente ou inválido" },
-            { error: "CEP inválido ou não encontrado" }
+          examples: [ 
+            {
+              name: "Maria Souza",
+              email: "maria@contato.com",
+              phone: "11987654321",
+              cep: "01001000",
+              number: "150",
+              complement: "Apto 101"
+            }
           ]
+        },
+        response: {
+          201: {
+            description: "Contato criado com sucesso",
+            type: "object",
+            properties: {
+              id: { type: "string", examples: ["2a69e5e1-0fba-4f1a-9e87-b67aacc68c88" ]},
+              name: { type: "string", examples: ["Maria Souza" ]},
+              email: { type: "string", examples: ["maria@contato.com" ]},
+              phone: { type: "string", examples: ["11987654321"] },
+              cep: { type: "string", examples: ["01001000"] },
+              street: { type: "string", examples: ["Praça da Sé" ]},
+              number: { type: "string", examples: ["150" ]},
+              district: { type: "string", examples: ["Sé" ]},
+              city: { type: "string", examples: ["São Paulo" ]},
+              state: { type: "string", examples: ["SP" ]},
+              complement: { type: "string", examples: ["Apto 101"] },
+              userId: { type: "string", examples: ["90c1c791-4cf5-43d3-98b7-d59a943805eb" ]}
+            }
+          },
+          400: {
+            description: "Erro na requisição",
+            type: "object",
+            properties: {
+              error: { type: "string" }
+            },
+            examples: [
+              { error: "Cabeçalho 'email' ausente ou inválido" },
+              { error: "CEP inválido ou não encontrado" }
+            ]
+          }
         }
       }
-    }
-  },
-     async (req: FastifyRequest<{ Body: ContactCreate, Headers: { email: string } }>, reply: FastifyReply) => {
+    },
+    async (req: FastifyRequest<{ Body: ContactCreate, Headers: { email: string } }>, reply: FastifyReply) => {
       const { name, email, phone, cep, number, complement } = req.body;
       const emailUserHeader = req.headers["email"];
 
@@ -103,7 +102,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
           complement,
           userEmail: emailUser,
         });
-        return reply.status(201).send(data);;
+        return reply.status(201).send(data);
       } catch (error) {
         reply.send(error);
       }
@@ -182,6 +181,13 @@ export async function contactRoutes(fastify: FastifyInstance) {
               },
             },
           },
+          400: {
+            description: "Erro na requisição",
+            type: "object",
+            properties: {
+              error: { type: "string" }
+            }
+          },
           404: {
             description: "Usuário não encontrado",
             type: "object",
@@ -208,14 +214,14 @@ export async function contactRoutes(fastify: FastifyInstance) {
 
       try {
         const data = await contactUseCase.listAllContacts(emailUser);
-        return reply.status(200).send(data);;
+        return reply.status(200).send(data);
       } catch (error) {
         reply.send(error);
       }
     }
   );
 
-  fastify.put<{ Body: Contact, Params: { id: string },Headers: { email: string }}>(
+  fastify.put<{ Body: Contact, Params: { id: string }, Headers: { email: string } }>(
     "/:id",
     {
       schema: {
@@ -332,20 +338,20 @@ export async function contactRoutes(fastify: FastifyInstance) {
       const { id } = req.params;
       const { name, email, phone, cep, number, complement } = req.body;
       try {
-      const data: Partial<Contact> = await contactUseCase.updateContact({
-        id,
-        name,
-        email,
-        phone,
-        cep,
-        street: "",       
-        number,
-        district: "",     
-        city: "",         
-        state: "",        
-        complement
-      });
-        return reply.status(201).send(data);;
+        const data: Partial<Contact> = await contactUseCase.updateContact({
+          id,
+          name,
+          email,
+          phone,
+          cep,
+          street: "",       
+          number,
+          district: "",     
+          city: "",         
+          state: "",        
+          complement
+        });
+        return reply.status(200).send(data);
       } catch (error) {
         reply.send(error);
       }
@@ -404,7 +410,7 @@ export async function contactRoutes(fastify: FastifyInstance) {
 
       try {
         const data = await contactUseCase.delete(id);
-        return reply.status(200).send(data);;
+        return reply.status(200).send(data);
       } catch (error) {
         reply.send(error);
       }

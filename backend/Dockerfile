@@ -9,7 +9,7 @@ RUN pnpm install
 
 COPY . .
 
-RUN pnpm run build && pnpm prisma generate
+RUN pnpm prisma generate && pnpm run build
 
 EXPOSE 3100
 
