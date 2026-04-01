@@ -151,7 +151,7 @@ docker run -d --name agenda -p 3100:3100 --env-file .env agenda
 
 ```bash
 cd frontend # ou apenas abra a pasta frontend 
-npm run dev
+pnpm dev
 ```
 
 ## 💻 Opção 2: Executar SEM Docker
@@ -188,14 +188,14 @@ NODE_ENV=development
 
 ```bash
 cd backend  # ou apenas abra a pasta backend 
-npm run dev
+pnpm dev
 ```
 
 ### 5. Inicie o Frontend (em outro terminal)
 
 ```bash
 cd frontend # ou apenas abra a pasta frontend
-npm run dev
+pnpm dev
 ```
 
 ## 🌐 URLs de Acesso

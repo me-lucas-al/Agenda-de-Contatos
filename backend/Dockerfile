@@ -4,12 +4,12 @@ WORKDIR /usr/app
 
 COPY package*.json ./
 
-RUN npm install
+RUN pnpm install
 
 COPY . .
 
-RUN npm run build && npx prisma generate
+RUN pnpm run build && pnpm prisma generate
 
 EXPOSE 3100
 
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+CMD ["sh", "-c", "pnpm exec prisma migrate deploy && pnpm start"]
