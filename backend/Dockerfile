@@ -2,9 +2,9 @@ FROM node:18-alpine
 
 WORKDIR /usr/app
 
+RUN npm install -g pnpm
 COPY package*.json ./
-
-RUN corepack enable && corepack prepare pnpm@latest --activate
+COPY pnpm-lock.yaml ./
 RUN pnpm install
 
 COPY . .
